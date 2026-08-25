@@ -1,0 +1,64 @@
+@extends('layouts.app')
+
+@section('title', 'Produits')
+
+@section('content')
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold">Inventaire</h1>
+    <a href="{{ route('produits.create') }}"
+       class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700">
+        + Nouveau produit
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-left">
+            <tr>
+                <th class="px-4 py-3">Nom</th>
+                <th class="px-4 py-3">SKU</th>
+                <th class="px-4 py-3 text-right">Prix</th>
+                <th class="px-4 py-3 text-right">Stock</th>
+                <th class="px-4 py-3">Statut</th>
+                <th class="px-4 py-3"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($produits as $produit)
+                <tr class="border-t">
+                    <td class="px-4 py-3">{{ $produit->nom }}</td>
+                    <td class="px-4 py-3 text-gray-500">{{ $produit->sku }}</td>
+                    <td class="px-4 py-3 text-right">{{ number_format($produit->prix_unitaire, 2) }} €</td>
+                    <td class="px-4 py-3 text-right">{{ $produit->quantite_stock }}</td>
+                    <td class="px-4 py-3">
+                        @if ($produit->estEnAlerte())
+                            <span class="text-red-600 font-medium">⚠️ Alerte</span>
+                        @else
+                            <span class="text-green-600">OK</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-right space-x-2">
+                        <a href="{{ route('produits.edit', $produit) }}" class="text-blue-600">Modifier</a>
+                        <form method="POST" action="{{ route('produits.destroy', $produit) }}" class="inline"
+                              onsubmit="return confirm('Supprimer ce produit ?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="px-4 py-6 text-center text-gray-400">
+                        Aucun produit pour l'instant.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4">
+    {{ $produits->links() }}
+</div>
+@endsection
