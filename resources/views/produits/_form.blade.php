@@ -24,6 +24,34 @@
               class="w-full border rounded px-3 py-2">{{ old('description', $produit->description ?? '') }}</textarea>
 </div>
 
+<div class="grid grid-cols-2 gap-4">
+    <div>
+        <label class="block text-sm font-medium mb-1">Catégorie</label>
+        <select name="categorie_id" class="w-full border rounded px-3 py-2">
+            <option value="">— Aucune —</option>
+            @foreach ($categories as $categorie)
+                <option value="{{ $categorie->id }}"
+                    @selected(old('categorie_id', $produit->categorie_id ?? '') == $categorie->id)>
+                    {{ $categorie->nom }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium mb-1">Fournisseur</label>
+        <select name="fournisseur_id" class="w-full border rounded px-3 py-2">
+            <option value="">— Aucun —</option>
+            @foreach ($fournisseurs as $fournisseur)
+                <option value="{{ $fournisseur->id }}"
+                    @selected(old('fournisseur_id', $produit->fournisseur_id ?? '') == $fournisseur->id)>
+                    {{ $fournisseur->nom }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
 <div class="grid grid-cols-3 gap-4">
     <div>
         <label class="block text-sm font-medium mb-1">Prix unitaire (€)</label>

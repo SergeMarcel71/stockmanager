@@ -8,9 +8,7 @@ class StoreProduitRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // v0.1 : tout utilisateur connecté peut créer un produit.
-        // Les rôles/permissions arrivent en v0.2.
-        return true;
+        return $this->user()->can('produits.gerer');
     }
 
     public function rules(): array
@@ -19,6 +17,8 @@ class StoreProduitRequest extends FormRequest
             'nom' => ['required', 'string', 'max:150'],
             'sku' => ['required', 'string', 'max:50', 'unique:produits,sku'],
             'description' => ['nullable', 'string'],
+            'categorie_id' => ['nullable', 'exists:categories,id'],
+            'fournisseur_id' => ['nullable', 'exists:fournisseurs,id'],
             'prix_unitaire' => ['required', 'numeric', 'min:0'],
             'quantite_stock' => ['required', 'integer', 'min:0'],
             'seuil_alerte' => ['required', 'integer', 'min:0'],

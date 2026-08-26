@@ -2,15 +2,15 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\FournisseurController;
+use App\Http\Controllers\MouvementStockController;
 use App\Http\Controllers\ProduitController;
 use Illuminate\Support\Facades\Route;
 
-// Redirection de la racine vers la liste des produits (ou le login si pas connecté)
 Route::get('/', function () {
     return redirect()->route('produits.index');
 });
 
-// --- Routes invités uniquement (register/login) ---
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
@@ -19,11 +19,17 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 });
 
-// --- Routes utilisateurs connectés uniquement ---
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    // Une seule ligne qui crée automatiquement les 7 routes CRUD standards
-    // (index, create, store, show, edit, update, destroy)
     Route::resource('produits', ProduitController::class)->except('show');
+    Route::resource('fournisseurs', FournisseurController::class)->except('show');
+
+    // Mouvement de stock : imbriqué sous un produit précis
+    // GET  /produits/{produit}/mouvements/create
+    // POST /produits/{produit}/mouvements
+    Route::get('produits/{produit}/mouvements/create', [MouvementStockController::class, 'create'])
+        ->name('mouvements.create');
+    Route::post('produits/{produit}/mouvements', [MouvementStockController::class, 'store'])
+        ->name('mouvements.store');
 });

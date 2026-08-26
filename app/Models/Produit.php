@@ -4,27 +4,44 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Produit extends Model
 {
     use HasFactory;
 
-    // Les champs qu'on autorise à remplir via un formulaire (protection contre l'injection de champs non voulus)
     protected $fillable = [
         'nom',
         'sku',
         'description',
+        'categorie_id',
+        'fournisseur_id',
         'prix_unitaire',
         'quantite_stock',
         'seuil_alerte',
     ];
 
-    // Conversion automatique des types quand on lit/écrit ces colonnes
     protected $casts = [
         'prix_unitaire' => 'decimal:2',
         'quantite_stock' => 'integer',
         'seuil_alerte' => 'integer',
     ];
+
+    public function categorie(): BelongsTo
+    {
+        return $this->belongsTo(Categorie::class);
+    }
+
+    public function fournisseur(): BelongsTo
+    {
+        return $this->belongsTo(Fournisseur::class);
+    }
+
+    public function mouvements(): HasMany
+    {
+        return $this->hasMany(MouvementStock::class)->latest('date_mouvement');
+    }
 
     /**
      * Règle de gestion du cahier des charges (§5.1) :

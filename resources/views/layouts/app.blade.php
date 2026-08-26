@@ -10,9 +10,18 @@
 
     @auth
     <nav class="bg-slate-800 text-white px-6 py-3 flex justify-between items-center">
-        <a href="{{ route('produits.index') }}" class="font-semibold text-lg">📦 StockManager</a>
+        <div class="flex items-center gap-6">
+            <a href="{{ route('produits.index') }}" class="font-semibold text-lg">📦 StockManager</a>
+            <a href="{{ route('produits.index') }}" class="text-sm text-slate-300 hover:text-white">Produits</a>
+            @can('fournisseurs.gerer')
+                <a href="{{ route('fournisseurs.index') }}" class="text-sm text-slate-300 hover:text-white">Fournisseurs</a>
+            @endcan
+        </div>
         <div class="flex items-center gap-4">
-            <span class="text-sm text-slate-300">{{ auth()->user()->name }}</span>
+            <span class="text-sm text-slate-300">
+                {{ auth()->user()->name }}
+                <span class="text-slate-500">({{ auth()->user()->getRoleNames()->first() ?? 'sans rôle' }})</span>
+            </span>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="text-sm text-slate-300 hover:text-white">Déconnexion</button>

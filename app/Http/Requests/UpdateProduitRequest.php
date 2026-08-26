@@ -8,7 +8,7 @@ class UpdateProduitRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('produits.gerer');
     }
 
     public function rules(): array
@@ -17,9 +17,10 @@ class UpdateProduitRequest extends FormRequest
 
         return [
             'nom' => ['required', 'string', 'max:150'],
-            // unique, sauf pour la ligne du produit qu'on est en train de modifier
             'sku' => ['required', 'string', 'max:50', 'unique:produits,sku,' . $produit->id],
             'description' => ['nullable', 'string'],
+            'categorie_id' => ['nullable', 'exists:categories,id'],
+            'fournisseur_id' => ['nullable', 'exists:fournisseurs,id'],
             'prix_unitaire' => ['required', 'numeric', 'min:0'],
             'quantite_stock' => ['required', 'integer', 'min:0'],
             'seuil_alerte' => ['required', 'integer', 'min:0'],
