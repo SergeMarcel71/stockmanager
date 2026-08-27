@@ -17,11 +17,16 @@
             @can('fournisseurs.gerer')
                 <a href="{{ route('fournisseurs.index') }}" class="text-sm text-slate-300 hover:text-white">Fournisseurs</a>
             @endcan
+            @role('admin')
+                <a href="{{ route('depots.index') }}" class="text-sm text-slate-300 hover:text-white">Dépôts</a>
+            @endrole
         </div>
         <div class="flex items-center gap-4">
             <span class="text-sm text-slate-300">
                 {{ auth()->user()->name }}
-                <span class="text-slate-500">({{ auth()->user()->getRoleNames()->first() ?? 'sans rôle' }})</span>
+                <span class="text-slate-500">
+                    ({{ auth()->user()->getRoleNames()->first() ?? 'sans rôle' }}@if(auth()->user()->depot) · {{ auth()->user()->depot->nom }} @endif)
+                </span>
             </span>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

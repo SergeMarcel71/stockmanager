@@ -13,7 +13,7 @@ Route::post('token', [AuthTokenController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::delete('token', [AuthTokenController::class, 'destroy']);
 
-    Route::apiResource('produits', ProduitController::class);
+    Route::apiResource('produits', ProduitController::class)->names('api.produits');
 
     Route::get('produits/{produit}/mouvements', [MouvementStockController::class, 'index']);
     Route::post('produits/{produit}/mouvements', [MouvementStockController::class, 'store']);

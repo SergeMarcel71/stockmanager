@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class StockMovementService
 {
-    /**
-     * Enregistre un mouvement de stock ET met à jour la quantité du produit,
-     * de façon atomique (soit tout réussit, soit rien n'est appliqué).
-     *
-     * @return MouvementStock|null null si le mouvement a été refusé (ex: stock insuffisant)
-     */
     public function enregistrer(
         Produit $produit,
         string $type,
@@ -32,13 +26,15 @@ class StockMovementService
             };
 
             if (! $succes) {
-                // On annule la transaction : aucun mouvement n'est enregistré
                 DB::rollBack();
                 return null;
             }
 
             $mouvement = MouvementStock::create([
                 'produit_id' => $produit->id,
+                // Le dépôt n'est jamais choisi manuellement dans le formulaire :
+                // il est déduit automatiquement du dépôt actif de l'utilisateur qui agit.
+                'depot_id' => $utilisateur->depot_id,
                 'utilisateur_id' => $utilisateur->id,
                 'type' => $type,
                 'quantite' => $quantite,
@@ -46,7 +42,6 @@ class StockMovementService
                 'date_mouvement' => now(),
             ]);
 
-            // Règle de gestion : notifier si le mouvement fait passer le produit sous le seuil
             if ($produit->fresh()->estEnAlerte()) {
                 $utilisateur->notify(new StockBasNotification($produit->fresh()));
             }
@@ -69,8 +64,6 @@ class StockMovementService
 
     private function appliquerAjustement(Produit $produit, int $quantite): bool
     {
-        // Un ajustement peut représenter une casse/perte constatée : on retire du stock,
-        // mais on l'autorise même si ça ramène exactement à 0 (jamais en dessous).
         return $produit->retirerStock($quantite);
     }
 }

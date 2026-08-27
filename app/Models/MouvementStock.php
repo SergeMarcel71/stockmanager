@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class MouvementStock extends Model
 {
     protected $table = 'mouvements_stock';
+
     protected $fillable = [
         'produit_id',
+        'depot_id',
         'utilisateur_id',
         'type',
         'quantite',
@@ -21,11 +23,6 @@ class MouvementStock extends Model
         'date_mouvement' => 'datetime',
     ];
 
-    /**
-     * Règle de gestion du cahier des charges (§5.2) :
-     * un mouvement est immuable, on ne le modifie/supprime jamais après coup.
-     * On désactive volontairement les méthodes de mise à jour/suppression Eloquent.
-     */
     public function update(array $attributes = [], array $options = []): bool
     {
         throw new \LogicException('Un mouvement de stock est immuable : impossible de le modifier.');
@@ -41,6 +38,11 @@ class MouvementStock extends Model
         return $this->belongsTo(Produit::class);
     }
 
+    public function depot(): BelongsTo
+    {
+        return $this->belongsTo(Depot::class);
+    }
+
     public function utilisateur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'utilisateur_id');
@@ -48,12 +50,14 @@ class MouvementStock extends Model
 
     public function libelle(): string
     {
-        return match ($this->type) {
+        $base = match ($this->type) {
             'entree' => "Entrée de {$this->quantite} unités",
             'sortie' => "Sortie de {$this->quantite} unités",
             'transfert' => "Transfert de {$this->quantite} unités",
             'ajustement' => "Ajustement de {$this->quantite} unités",
             default => "Mouvement de {$this->quantite} unités",
         };
+
+        return $this->depot ? "{$base} — {$this->depot->nom}" : $base;
     }
 }
