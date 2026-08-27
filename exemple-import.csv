@@ -1,0 +1,6 @@
+nom,sku,prix_unitaire,quantite_stock,seuil_alerte,categorie,fournisseur
+Clavier mécanique RGB,CLA-099,45.90,20,5,Périphériques,TechDistrib
+Écran 27 pouces 4K,ECR-014,320.00,8,3,Ordinateurs,InfoPlus
+Câble HDMI 2m,CAB-002,7.50,2,10,Réseau,TechDistrib
+Webcam HD 1080p,CAM-005,29.99,15,5,Périphériques,InfoPlus
+Disque SSD 1To,SSD-021,89.00,6,4,Ordinateurs,TechDistrib

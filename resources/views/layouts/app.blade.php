@@ -12,6 +12,7 @@
     <nav class="bg-slate-800 text-white px-6 py-3 flex justify-between items-center">
         <div class="flex items-center gap-6">
             <a href="{{ route('produits.index') }}" class="font-semibold text-lg">📦 StockManager</a>
+            <a href="{{ route('dashboard') }}" class="text-sm text-slate-300 hover:text-white">Dashboard</a>
             <a href="{{ route('produits.index') }}" class="text-sm text-slate-300 hover:text-white">Produits</a>
             @can('fournisseurs.gerer')
                 <a href="{{ route('fournisseurs.index') }}" class="text-sm text-slate-300 hover:text-white">Fournisseurs</a>
@@ -40,5 +41,6 @@
         @yield('content')
     </main>
 
+    @stack('scripts')
 </body>
 </html>

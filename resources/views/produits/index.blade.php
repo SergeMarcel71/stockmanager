@@ -5,12 +5,18 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-semibold">Inventaire</h1>
-    @can('create', App\Models\Produit::class)
-        <a href="{{ route('produits.create') }}"
-           class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700">
-            + Nouveau produit
-        </a>
-    @endcan
+    <div class="flex gap-2">
+        @can('create', App\Models\Produit::class)
+            <a href="{{ route('produits.import') }}"
+               class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50">
+                Importer (CSV)
+            </a>
+            <a href="{{ route('produits.create') }}"
+               class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700">
+                + Nouveau produit
+            </a>
+        @endcan
+    </div>
 </div>
 
 @if (session('error'))
