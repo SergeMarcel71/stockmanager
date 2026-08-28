@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\StockBasDeclenche;
 use App\Models\MouvementStock;
 use App\Models\Produit;
 use App\Models\User;
@@ -32,8 +33,6 @@ class StockMovementService
 
             $mouvement = MouvementStock::create([
                 'produit_id' => $produit->id,
-                // Le dépôt n'est jamais choisi manuellement dans le formulaire :
-                // il est déduit automatiquement du dépôt actif de l'utilisateur qui agit.
                 'depot_id' => $utilisateur->depot_id,
                 'utilisateur_id' => $utilisateur->id,
                 'type' => $type,
@@ -43,7 +42,14 @@ class StockMovementService
             ]);
 
             if ($produit->fresh()->estEnAlerte()) {
-                $utilisateur->notify(new StockBasNotification($produit->fresh()));
+                $produitFrais = $produit->fresh();
+
+                // Email (déjà en place depuis la v0.2) : trace durable, consultée plus tard
+                $utilisateur->notify(new StockBasNotification($produitFrais));
+
+                // Diffusion en temps réel (nouveau) : tout navigateur ouvert sur le dashboard
+                // reçoit l'alerte instantanément, sans recharger la page
+                broadcast(new StockBasDeclenche($produitFrais));
             }
 
             return $mouvement;

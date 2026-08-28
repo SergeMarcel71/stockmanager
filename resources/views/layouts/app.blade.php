@@ -36,6 +36,9 @@
     </nav>
     @endauth
 
+    <!-- Zone où les alertes temps réel apparaissent, en haut à droite de l'écran -->
+    <div id="alertes-temps-reel" class="fixed top-4 right-4 z-50 space-y-2 w-80"></div>
+
     <main class="max-w-5xl mx-auto px-6 py-8">
         @if (session('success'))
             <div class="mb-4 rounded bg-green-100 text-green-800 px-4 py-3">
@@ -45,6 +48,39 @@
 
         @yield('content')
     </main>
+
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // window.Echo est défini dans resources/js/echo.js, importé dans app.js
+            if (typeof window.Echo === 'undefined') {
+                console.warn('Echo n\'est pas chargé — vérifie resources/js/app.js et le fichier .env (VITE_REVERB_*).');
+                return;
+            }
+
+            window.Echo.channel('alertes-stock')
+                .listen('.stock.bas', (evenement) => {
+                    afficherAlerte(evenement);
+                });
+
+            function afficherAlerte(evenement) {
+                const zone = document.getElementById('alertes-temps-reel');
+
+                const carte = document.createElement('div');
+                carte.className = 'bg-red-600 text-white rounded-lg shadow-lg p-4 text-sm animate-pulse';
+                carte.innerHTML = `
+                    <p class="font-semibold">⚠️ Stock bas</p>
+                    <p>${evenement.nom} — ${evenement.quantite_stock} / seuil ${evenement.seuil_alerte}</p>
+                `;
+
+                zone.appendChild(carte);
+
+                // Disparaît toute seule après 8 secondes
+                setTimeout(() => carte.remove(), 8000);
+            }
+        });
+    </script>
+    @endauth
 
     @stack('scripts')
 </body>
